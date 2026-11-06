@@ -1,0 +1,33 @@
+name: Daily AI Questions
+on:
+  schedule:
+       - cron: '0 21 * * *' # UTC 21:00 = 日本時間 翌朝6:00
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: daily-ai-questions
+  cancel-in-progress: false
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate questions (free tier only)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: gemini-2.5-flash-lite
+        run: python generate_questions.py
+      - name: Commit new questions
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add daily-questions.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update daily AI questions"
+            git push
+          fi
