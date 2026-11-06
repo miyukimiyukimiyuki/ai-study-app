@@ -20,7 +20,7 @@ jobs:
       - name: Generate questions (free tier only)
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: gemini-2.5-flash-lite
+　　　　　　GEMINI_MODEL: gemini-3.5-flash-lite
         run: python generate_questions.py
       - name: Commit new questions
         run: |
