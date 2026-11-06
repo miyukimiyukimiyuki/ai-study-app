@@ -31,7 +31,10 @@ except urllib.error.HTTPError as exc:
     print('Gemini APIエラー（課金は行いません）:', exc.code, exc.read().decode()[:500])
     sys.exit(1)
 text = response['candidates'][0]['content']['parts'][0]['text']
-items = json.loads(text)['questions']
+data = json.loads(text)
+items = data['questions'] if isinstance(data, dict) else data
+if not isinstance(items, list):
+    raise ValueError('問題データがリスト形式ではありません')
 if len(items) != 20:
     sys.exit(f'問題数が20問ではありません: {len(items)}')
 for i, q in enumerate(items):
